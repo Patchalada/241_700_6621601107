@@ -1,21 +1,6 @@
-/*const http = require('http');
-
-const host = 'localhost';
-const port = 8000;
-
-const requireListener = function (req, res) {
-    res.writeHead(200);
-    res.end('My first server!');
-}
-
-const server = http.createServer(requireListener);
-server.listen(port, host, () => {
-    console.log(`Server is running on http://${host}:${port}`); 
-})
-*/
-
-const express = require('express');
+const express = require('express')
 const bodyParser = require('body-parser');
+const mysql = require('mysql2/promise');
 const app = express();
 
 const port = 8000;
@@ -23,53 +8,77 @@ const port = 8000;
 app.use(bodyParser.json());
 
 let users = []
-let counter = 1
 
-app.get('/users', (req, res) => {
-    res.json(users);
+let conn=null
+
+const initMySQL = async () => {
+   conn= await mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'webdb',
+    port: 8820
+ 
+  })
+}
+
+app.get('/users',async (req, res) => {
+  const results = await conn.query('SELECT * FROM user')
+  res.json(results[0])
 })
 
-app.post('/user', (req, res) => {
-    let user = req.body;
-    user.id = counter
-    counter += 1
-    users.push(user);
-    res.json({
-        message: 'Create new user successfully',
-        user: user
-    })
+app.post('/users',async (req, res) => {
+  let user = req.body;
+  const results= await conn.query('INSERT INTO users SET ?', user)
+  console.log('results', results)
+  res.json({
+    message: 'Create user successfully',
+    data: results[0]
+  })
 })
 
-app.put('/user/:id', (req, res) => {
-    let id = req.params.id;
-    let updateUser = req.body;
+app.get('/users/:id', (req, res) => {
+  let id = req.params.id;
+ 
+  let selectedIndex = users.findIndex(user => user.id == id)
 
-    //หา users จาก id ที่ส่งมา
-    let selectedIndex = users.findIndex(user => user.id == id)
 
-    //แก้ไขข้อมูล users ที่เจอ
-    if (updateUser.firstname) {
-        users[selectedIndex].firstname = updateUser.firstname;
+  res.json(users[selectedIndex])
+})
+
+app.put('/users/:id', (req, res) => {
+  let id = req.params.id;
+  let updateUser = req.body;
+  let selectedIndex = users.findIndex(user => user.id == id)
+
+  users[selectedIndex].firstname = updateUser.firstname || users[selectedIndex].firstname
+  users[selectedIndex].lastname = updateUser.lastname || users[selectedIndex].lastname
+  users[selectedIndex].age = updateUser.age || users[selectedIndex].age
+  users[selectedIndex].gender = updateUser.gender || users[selectedIndex].gender
+ 
+  res.json({
+    message: 'Update user successfully',
+    data: {
+        user: updateUser,
+        indexUpdate: selectedIndex
     }
-    if (updateUser.lastname) {
-        users[selectedIndex].lastname = updateUser.lastname;
-    }
-
-    res.json({
-        message: 'Update user successfully',
-        data: {
-            user: updateUser,
-            indexUpdated: selectedIndex
-        }
-    })
-    //users ที่อ update กลับไปเก็บใน users เดิม
-    delete users[selectIndex]
-    res.json({
-        message: 'Delete user successfully',
-        indexDeleted: selectIndex
-    })
+  })
 })
 
-app.listen(port, (req, res) => {
-    console.log('Http Server is running on port' + port);
+
+app.delete('/users/:id', (req, res) => {
+  let id = req.params.id;
+
+  let selectedIndex = users.findIndex(user => user.id == id)
+
+  users.splice(selectedIndex, 1)
+  res.json({
+    message: 'Delete user successfully',
+      indexDeleted: selectedIndex
+  })
+})
+
+app.listen(port,async (req, res) => {
+  await initMySQL()
+  console.log('http server is running on port' + port)
 });
