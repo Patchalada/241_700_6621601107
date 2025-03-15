@@ -1,44 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>Document</title>
-     <style>
-        ul {
-            list-style-type: none;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        ul{
+            list-style: none;
             margin: 0;
             padding: 0;
-        }
-        /* Desktop */
-        .desktop ul {
+        }/* Desktop */
+        .desktop ul{
             display: flex;
         }
-        .desktop ul > li {
+        .desktop ul > li{
             margin-right: 20px;
         }
         .mobile-menu,
         .mobile {
             display: none;
         }
-        @media screen and (max-width: 768px) {
-            .desktop {
+        @media  screen and (max-width: 768px){
+            .desktop{
                 display: none;
             }
-            .mobile-menu {
+            .mobile-menu{
                 display: block;
             }
-            .mobile-menu:hover + .mobile {
+            .mobile-menu:hover + .mobile{
                 display: block;
-            } 
+            }
+            
+          
         }
-     </style>
+        
+    
+        
+    </style>
 </head>
 <body>
     <div class="desktop">
         <ul>
-            <li>Homr</li>
+            <li>Home</li>
             <li>About</li>
             <li>Contact</li>
         </ul>
@@ -46,10 +49,13 @@
     <div class="mobile-menu">Menu</div>
     <div class="mobile">
         <ul>
-            <li>Homr</li>
+            <li>Home</li>
             <li>About</li>
             <li>Contact</li>
         </ul>
+        
     </div>
+     
+    
 </body>
 </html>
