@@ -111,12 +111,12 @@ app.get('/users/:id', async (req, res) => {
     }
       res.json(results[0][0])
      
-    } catch (err) {
-      console.log('error', err.message)
-      let statusCode = err.statusCode || 500
+    } catch (error) {
+      console.log('error', error.message)
+      let statusCode = error.statusCode || 500
       res.status(500).json({
         message: 'something went wrong',
-        errorMesssage: err.message
+        errorMesssage: error.message
       })
   } 
 }) 
@@ -127,7 +127,6 @@ app.put('/users/:id',async (req, res) => {
   try{
     let id = req.params.id;
     let updateUser = req.body;
-    let user = req.body;
     const results= await conn.query(
       'UPDATE users SET ? WHERE id=?', 
       [updateUser, id]
@@ -136,10 +135,11 @@ app.put('/users/:id',async (req, res) => {
       message: 'Update users successfully',
       data: results[0]
     }) 
-  }catch(err){
+  }catch(error){
+    console.log('error', error.message)
     res.status(500).json({
       message: 'something went wrong',
-      errorMesssage: err.message
+      errorMesssage: error.message
     })
   }
 })
