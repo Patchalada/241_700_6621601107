@@ -135,3 +135,34 @@ const submitData = async () => {
     messageDOM.className = 'message danger'
   }
 }
+
+/* ลบข้อมูล */
+const deleteData = async () => {
+  if (mode !== 'EDIT') return;
+
+  const isConfirmed = confirm('คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?');
+  if (!isConfirmed) return;
+
+  let messageDOM = document.getElementById('message');
+
+  try {
+    const response = await axios.delete(`${BASE_URL}/users/${selectedId}`);
+    console.log('delete response', response.data);
+
+    messageDOM.innerText = 'ลบข้อมูลเรียบร้อยแล้ว';
+    messageDOM.className = 'message success';
+
+    setTimeout(() => {
+      window.location.href = 'users.html';
+    }, 1000);
+  } catch (error) {
+    console.log('delete error', error);
+
+    if (error.response) {
+      error.message = error.response.data.message;
+    }
+
+    messageDOM.innerText = error.message || 'เกิดข้อผิดพลาดในการลบข้อมูล';
+    messageDOM.className = 'message danger';
+  }
+}
